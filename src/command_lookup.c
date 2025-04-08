@@ -23,13 +23,13 @@ CommandOption options[] = {
         "--view",
         2,
         view,
-        {HUNT, TREASURE}
+        {HUNT_EXISTING, TREASURE}
     },
     {
         "--remove_treasure",
         2,
         remove_treasure,
-        {HUNT, TREASURE}
+        {HUNT_EXISTING, TREASURE}
     },
     {
         "--remove_hunt",

@@ -17,15 +17,31 @@ int file_exists(const char *path)
     return (stat(path, &statbuf) == 0);
 }
 
+int file_size(const char *path)
+{
+    struct stat statbuf;
+    if (stat(path, &statbuf) != 0)
+        return -1;
+    return statbuf.st_size;
+}
+
+time_t last_modification_time(const char *path)
+{
+    struct stat statbuf;
+    if (stat(path, &statbuf) != 0)
+        return -1;
+    return statbuf.st_mtime;
+}
+
 const char *hunt_path(const char *hunt_name) {
     static char file_path[128];
     snprintf(file_path, sizeof(file_path), "%s/%s", "hunts", hunt_name);
     return file_path;
 }
 
-const char *treasure_file_path(const char *path, const char *treasure_name)
+const char *treasure_file_path(const char *hunt_name, const char *treasure_name)
 {
     static char file_path[128];
-    snprintf(file_path, sizeof(file_path), "hunts/%s/%s", path, treasure_name);
+    snprintf(file_path, sizeof(file_path), "hunts/%s/%s", hunt_name, treasure_name);
     return file_path;
 }
