@@ -8,7 +8,8 @@ Treasure treasure_from_input(const char *hunt_name)
 {
 
     //TODO: INPUT VALIDATION
-
+    //TODO: sa mearga clue cu mai multe cuvinte
+    
     Treasure treasure;
     printf("Adding a new treasure to hunt: %s\n", hunt_name);
     printf("Enter the ID of the treasure: ");
@@ -37,7 +38,8 @@ void print_treasure(const Treasure treasure)
 void print_treasures(const Treasure treasures[], int count, const char *hunt_name)
 {
     printf("Hunt: %s\n", hunt_name);
-    printf("Hunt file size: %d\n", file_size(hunt_path(hunt_name)));
+    //Si aici trebe facut asta sa mearga cu mai multe fisiere
+    printf("Hunt file size: %d\n", file_size(treasure_file_path(hunt_name, "treasure.bin")));
 
     time_t time_modified = last_modification_time(hunt_path(hunt_name));
 

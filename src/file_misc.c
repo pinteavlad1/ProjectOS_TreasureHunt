@@ -19,6 +19,7 @@ int file_exists(const char *path)
 
 int file_size(const char *path)
 {
+    printf("path : %s\n", path);
     struct stat statbuf;
     if (stat(path, &statbuf) != 0)
         return -1;
