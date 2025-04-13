@@ -31,4 +31,4 @@ $(OBJ_DIR):
 
 # Clean rule
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET)
+	rm -rf $(OBJ_DIR) $(TARGET) hunts

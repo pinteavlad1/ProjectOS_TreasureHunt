@@ -2,6 +2,7 @@
 #include "file_misc.h"
 #include "treasure.h"
 #include "interface.h"
+#include "logger.h"
 
 #include <unistd.h>
 #include <sys/stat.h>
@@ -15,7 +16,9 @@
 
 #define TREASURE_READ_CHUNK 128
 
-// TODO: Sa nu dau aici in fileu asta perror sa fac cu return value cred ca e mai ok
+//TODO: Mesaje mai ok de log 
+
+//TODO: Sa nu dau aici in fileu asta perror sa fac cu return value cred ca e mai ok
 
 void add(int argc, char *argv[])
 {
@@ -39,6 +42,7 @@ void add(int argc, char *argv[])
             perror("Error at mkdir");
             return;
         }
+        start_logging(treasure_file_path(argv[2], "logged_hunt.txt"), symlink_file_path(argv[2]));
     }
 
     int file_descriptor;
@@ -64,6 +68,8 @@ void add(int argc, char *argv[])
         close(file_descriptor);
         return;
     }
+
+    log_message(treasure_file_path(argv[2], "logged_hunt.txt"), "Added treasure\n");
 
     close(file_descriptor);
 }
@@ -122,6 +128,8 @@ void list(int argc, char *argv[])
         print_treasures(treasures, count, argv[2]);
     }
 
+    log_message(treasure_file_path(argv[2], "logged_hunt.txt"), "Listed hunt\n");
+
     free(treasures);
     close(file_descriptor);
 }
@@ -156,6 +164,9 @@ void view(int argc, char *argv[])
     }
 
     printf("Treasure with ID %s not found in hunt: %s\n", argv[3], argv[2]);
+
+    log_message(treasure_file_path(argv[2], "logged_hunt.txt"), "Viewed treasure\n");
+
 
     close(file_descriptor);
 }
@@ -222,6 +233,9 @@ void remove_treasure(int argc, char *argv[])
         perror("Error at truncate");
         return;
     }
+
+    log_message(treasure_file_path(argv[2], "logged_hunt.txt"), "Removed treasure\n");
+
 }
 
 void remove_hunt(int argc, char *argv[])
@@ -231,7 +245,19 @@ void remove_hunt(int argc, char *argv[])
     assert(argv[2] != NULL);
     assert(is_directory(hunt_path(argv[2])));
 
+    if (unlink(symlink_file_path(argv[2])) != 0)
+    {
+        perror("Error at unlink");
+        return;
+    }
+
     if (unlink(treasure_file_path(argv[2], "treasure.bin")) != 0)
+    {
+        perror("Error at unlink");
+        return;
+    }
+
+    if (unlink(treasure_file_path(argv[2], "logged_hunt.txt")) != 0)
     {
         perror("Error at unlink");
         return;

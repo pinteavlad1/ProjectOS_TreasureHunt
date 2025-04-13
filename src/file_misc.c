@@ -2,6 +2,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 
 int is_directory(const char *path)
 {
@@ -44,5 +45,12 @@ const char *treasure_file_path(const char *hunt_name, const char *treasure_name)
 {
     static char file_path[128];
     snprintf(file_path, sizeof(file_path), "hunts/%s/%s", hunt_name, treasure_name);
+    return file_path;
+}
+
+const char *symlink_file_path(const char *hunt_name)
+{
+    static char file_path[128];
+    snprintf(file_path, sizeof(file_path), "logged_hunt-%s", hunt_name);
     return file_path;
 }

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <time.h>
 
+//Idee: interfata cu ncurses - ceva gen neofetch
+
 Treasure treasure_from_input(const char *hunt_name)
 {
 
