@@ -1,6 +1,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Wextra -Iheaders
+CLINKS = -lncurses -lmenu
 
 # Directories
 SRC_DIR = src
@@ -19,7 +20,7 @@ all: $(TARGET)
 
 # Link all object files to create final executable
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(CLINKS)
 
 # Compile .c files to .o in objects/ directory
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
