@@ -16,14 +16,14 @@
 
 
 typedef struct {
-    char id[16];
-    char user_name[32];
+    char id[MAX_ID_LENGTH];
+    char user_name[MAX_USER_NAME_LENGTH];
     struct
     {
         double latitude;
         double longitude;
     } coordinates;
-    char clue_text[128];
+    char clue_text[MAX_CLUE_TEXT_LENGTH];
     uint16_t value;
     
 } Treasure;

@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 int is_directory(const char *path)
 {

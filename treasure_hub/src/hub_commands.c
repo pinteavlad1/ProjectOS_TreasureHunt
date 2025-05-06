@@ -6,7 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <sys/wait.h>
+
 
 #include "hub_commands.h"
 #include "monitor.h"
@@ -68,8 +71,86 @@ void list_all_hunts(Monitor* monitor) {
     assert(monitor->status == 1);
     assert(monitor_stopping == 0);
 
+    int file_descriptor = open("data/command.bin", O_WRONLY | O_CREAT, 0777);
+    if (file_descriptor == -1) {
+        perror("Failed to open command file");
+        return;
+    }
+    Command *command;
+    command = (Command*) malloc(sizeof(Command));
+    command->id = 1;
+
+    if (write(file_descriptor, command, sizeof(Command)) == -1) {
+        perror("Failed to write command");
+        close(file_descriptor);
+        return;
+    }
+    close(file_descriptor);
+
     kill(monitor->pid, SIGUSR1);
+
     printf("Listing all hunts...\n");
+}
+
+
+void list_treasures(Monitor* monitor, char* hunt_id) {
+
+    assert(monitor != NULL);
+    assert(monitor->pid != 0);
+    assert(monitor->status == 1);
+    assert(monitor_stopping == 0);
+
+    int file_descriptor = open("data/command.bin", O_WRONLY | O_CREAT, 0777);
+    if (file_descriptor == -1) {
+        perror("Failed to open command file");
+        return;
+    }
+    Command *command;
+    command = (Command*) malloc(sizeof(Command));
+    command->id = 2;
+    strcpy(command->data, hunt_id);
+
+    if (write(file_descriptor, command, sizeof(Command)) == -1) {
+        perror("Failed to write command");
+        close(file_descriptor);
+        return;
+    }
+    close(file_descriptor);
+
+    kill(monitor->pid, SIGUSR1);
+
+    printf("Listing treasures...\n");
+}
+
+void view_treasure(Monitor* monitor, char *hunt_id, char *treasure_id) {
+
+    assert(monitor != NULL);
+    assert(monitor->pid != 0);
+    assert(monitor->status == 1);
+    assert(monitor_stopping == 0);
+
+    int file_descriptor = open("data/command.bin", O_WRONLY | O_CREAT, 0777);
+    if (file_descriptor == -1) {
+        perror("Failed to open command file");
+        return;
+    }
+    Command *command;
+    command = (Command*) malloc(sizeof(Command));
+    command->id = 3;
+    strcpy(command->data, hunt_id);
+    strcat(command->data, " ");
+    strcat(command->data, treasure_id);
+
+    if (write(file_descriptor, command, sizeof(Command)) == -1) {
+        perror("Failed to write command");
+        close(file_descriptor);
+        return;
+    }
+    close(file_descriptor);
+
+    kill(monitor->pid, SIGUSR1);
+
+    printf("Viewing treasure...\n");   
 }
 
 
@@ -78,7 +159,7 @@ void monitor_stopped(int signum) {
     assert(signum == SIGCHLD);
 
     monitor_stopping = 0;
-    printf("Monitor stopped.\n");
+    printf("Child process exited with status: %d\n", WEXITSTATUS(signum));
 }
 
 void link_hub_handlers() {

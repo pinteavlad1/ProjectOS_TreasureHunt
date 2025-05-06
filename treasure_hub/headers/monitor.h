@@ -4,8 +4,8 @@ void stop();
 
 void list_hunts();
 
-void list_treasures();
+void get_treasures(char *hunt_id);
 
-void view_treasure();
+void get_treasure(char *hunt_id, char *treasure_id);
 
 void link_handlers();

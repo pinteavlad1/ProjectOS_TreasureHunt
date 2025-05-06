@@ -9,3 +9,4 @@ time_t last_modification_time(const char *path);
 const char *hunt_path(const char *hunt_name);
 const char *treasure_file_path(const char *path, const char *treasure_name);
 const char *symlink_file_path(const char *hunt_name);
+int treasures_in_file(const char *path);

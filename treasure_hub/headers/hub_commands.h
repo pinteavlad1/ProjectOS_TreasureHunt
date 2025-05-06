@@ -8,6 +8,11 @@ typedef struct {
     int status;
 } Monitor;
 
+typedef struct {
+    int id;
+    char data[64];
+} Command;
+
 
 void monitor_stopped(int signum);
 
@@ -15,12 +20,15 @@ void start_monitor(Monitor* monitor);
 
 void stop_monitor(Monitor* monitor);
 
+void list_treasures(Monitor* monitor, char* hunt_id);
+
+void view_treasure(Monitor* monitor, char* hunt_id, char* treasure_id);
+
 void list_all_hunts(Monitor* monitor);
 
 void link_hub_handlers();
 
 int is_monitor_stopping();
-
 
 
 

@@ -18,7 +18,7 @@ int main() {
 		// Monitor not started or we are the main process
 		if (monitor.pid != 0) {
 
-			command[0] = '\0'; //Se repeta comanda daca primeste semnal in timp ce face scanf si scrie monitoru peste
+			command[0] = 0; //Daca monitor da printf in timp ce asteptam input, trece peste scanf si ruleaza ultima comanda
 
 			printf("> ");
 			scanf("%20s", command);
@@ -46,9 +46,31 @@ int main() {
 						list_all_hunts(&monitor);
 					}
 				} 
-				else if (strcmp(command, "view_treasure") == 0) {
-					view_treasure();
+				else if (strcmp(command, "list_treasures") == 0) {
+					if (monitor.status == 0) {
+						printf("Monitor is not running.\n");
+					} 
+					else {
+						char hunt_id[21];
+						printf("Enter hunt ID: ");
+						scanf("%20s", hunt_id);
+						list_treasures(&monitor, hunt_id);
+					}
 				} 
+				else if (strcmp(command, "view_treasure") == 0) {
+					char hunt_id[21], treasure_id[21];
+					printf("Enter hunt ID: ");
+					scanf("%20s", hunt_id);
+					printf("Enter treasure ID: ");
+					scanf("%20s", treasure_id);
+					view_treasure(&monitor, hunt_id, treasure_id);
+				} 
+				else if (strcmp(command, "exit") == 0) {
+					break;
+				} 
+				else if (strcmp(command, "clear") == 0) {
+					printf("\e[1;1H\e[2J"); //ANSI clear screen
+				}
 				else if (strcmp(command, "exit") == 0) {
 					break;
 				} 

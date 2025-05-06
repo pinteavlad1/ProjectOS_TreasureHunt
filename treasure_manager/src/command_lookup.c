@@ -37,6 +37,12 @@ CommandOption options[] = {
         remove_hunt,
         {HUNT_EXISTING}
     },
+    {
+        "--list_hunts",
+        0,
+        list_hunts,
+        {}
+    }
 };
 
 

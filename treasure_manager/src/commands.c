@@ -13,8 +13,11 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <dirent.h>
 
 #define TREASURE_READ_CHUNK 128
+
+#define UNUSED(x) (void)(x)
 
 //TODO: Mesaje mai ok de log 
 
@@ -270,4 +273,71 @@ void remove_hunt(int argc, char *argv[])
     }
 
     printf("Hunt %s removed successfully\n", argv[2]);
+}
+
+//Asta as vrea sa l fac cu size / sizeof(Treasure) ca nu inteleg da ls -la si st_size dau 400bytes cand fisierul de mai putin
+int treasures_in_file(const char *path)
+{
+    int file_descriptor = open(path, O_RDONLY);
+    if (file_descriptor < 0)
+    {
+        perror("Error at open");
+        return -1;
+    }
+
+    Treasure *treasures = malloc(TREASURE_READ_CHUNK * sizeof(Treasure));
+    if (treasures == NULL)
+    {
+        perror("Error at malloc");
+        close(file_descriptor);
+        return -1;
+    }
+
+    int count = 0;
+    while (read(file_descriptor, &treasures[count], sizeof(Treasure)) == sizeof(Treasure))
+    {
+        count++;
+        if (count % TREASURE_READ_CHUNK == 0)
+        {
+            treasures = realloc(treasures, (count + TREASURE_READ_CHUNK) * sizeof(Treasure));
+            if (treasures == NULL)
+            {
+                perror("Error at realloc");
+                close(file_descriptor);
+                return -1;
+            }
+        }
+    }
+
+    free(treasures);
+    close(file_descriptor);
+    return count;
+}
+
+
+void list_hunts(int argc, char *argv[])
+{
+    UNUSED(argv);
+    assert(argc == 2);
+
+    if (!is_directory("hunts"))
+    {
+        printf("No hunts found\n");
+        return;
+    }
+
+    DIR *dir = opendir("hunts");
+    if (dir == NULL)
+    {
+        perror("Error at opendir");
+        return;
+    }
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (entry->d_type == DT_DIR && strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+        {
+            printf("%s: %d treasures\n", entry->d_name, treasures_in_file(treasure_file_path(entry->d_name, "treasure.bin")));
+        }
+    }
 }
