@@ -9,15 +9,37 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "monitor.h"
 #include "hub_commands.h"
 
+int pipefd[2];
+
+void set_pipe_file_descriptors(int fd[2]) {
+    pipefd[0] = fd[0];
+    pipefd[1] = fd[1];
+
+    if (dup2(pipefd[1], STDOUT_FILENO) == -1) {
+        perror("Failed to redirect stdout");
+        return;
+    }
+    if (dup2(pipefd[1], STDERR_FILENO) == -1) {
+        perror("Failed to redirect stderr");
+        return;
+    }
+
+    close(pipefd[0]);
+}
+
 void stop(int signum) {
 
     assert(signum == SIGTERM);
-
+    
     printf("Stopping monitor...\n");
+    close(pipefd[1]);
+
     usleep(1000000);
     exit(0);
 }
@@ -36,6 +58,10 @@ void list_hunts() {
         }
 
         execl("./treasure_manager", "treasure_manager", "--list_hunts", NULL);
+    }
+    else {
+        waitpid(pid, NULL, 0);
+        kill(getppid(), SIGUSR1);
     }
 
 }

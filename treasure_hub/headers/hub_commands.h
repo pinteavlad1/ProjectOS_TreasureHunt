@@ -6,6 +6,7 @@ typedef struct {
     char *name;
     pid_t pid;
     int status;
+    int pipefd[2];
 } Monitor;
 
 typedef struct {
@@ -16,7 +17,7 @@ typedef struct {
 
 void monitor_stopped(int signum);
 
-void start_monitor(Monitor* monitor);
+void start_monitor(char* message, Monitor* monitor);
 
 void stop_monitor(Monitor* monitor);
 
@@ -24,7 +25,7 @@ void list_treasures(Monitor* monitor, char* hunt_id);
 
 void view_treasure(Monitor* monitor, char* hunt_id, char* treasure_id);
 
-void list_all_hunts(Monitor* monitor);
+void list_all_hunts(char* message, Monitor* monitor);
 
 void link_hub_handlers();
 

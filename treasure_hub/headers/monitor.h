@@ -1,5 +1,7 @@
 #pragma once
 
+void set_pipe_file_descriptors(int fd[2]);
+
 void stop();
 
 void list_hunts();

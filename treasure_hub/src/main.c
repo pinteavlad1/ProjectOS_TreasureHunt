@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "hub_commands.h"
 
 int main() {
@@ -9,8 +10,10 @@ int main() {
 	monitor.name = "Treasure Monitor";
 	monitor.pid = -1;
 	monitor.status = 0;
+	monitor.pipefd[0] = -1;
+	monitor.pipefd[1] = -1;
 
-	link_hub_handlers();
+	char *message = (char*) malloc(1024);
 
     printf("Welcome to the Treasure Hub!\n");
     while (1) {
@@ -28,7 +31,13 @@ int main() {
 					printf("Cannot execute commands: monitor is stopping.\n");
 				}
 				else if (strcmp(command, "start_monitor") == 0) {
-					start_monitor(&monitor);
+					if (monitor.status == 1) {
+						printf("Monitor is already running.\n");
+					} 
+					else {
+						start_monitor(message, &monitor);
+						printf("%s\n", message);
+					}
 				} 
 				else if (strcmp(command, "stop_monitor") == 0) {
 					if (monitor.status == 0) {
@@ -43,7 +52,8 @@ int main() {
 						printf("Monitor is not running.\n");
 					} 
 					else {
-						list_all_hunts(&monitor);
+						list_all_hunts(message, &monitor);
+						printf("%s\n", message);
 					}
 				} 
 				else if (strcmp(command, "list_treasures") == 0) {
@@ -84,5 +94,6 @@ int main() {
 			}
 		}
     }
+	free(message);
     return 0;
 }
