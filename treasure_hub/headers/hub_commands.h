@@ -21,9 +21,9 @@ void start_monitor(char* message, Monitor* monitor);
 
 void stop_monitor(Monitor* monitor);
 
-void list_treasures(Monitor* monitor, char* hunt_id);
+void list_treasures(char* message, Monitor* monitor, char* hunt_id);
 
-void view_treasure(Monitor* monitor, char* hunt_id, char* treasure_id);
+void view_treasure(char* message, Monitor* monitor, char* hunt_id, char* treasure_id);
 
 void list_all_hunts(char* message, Monitor* monitor);
 

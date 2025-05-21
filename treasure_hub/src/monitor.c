@@ -61,7 +61,7 @@ void list_hunts() {
     }
     else {
         waitpid(pid, NULL, 0);
-        kill(getppid(), SIGUSR1);
+        kill(getppid(), SIGUSR2);
     }
 
 }
@@ -78,7 +78,10 @@ void get_treasures(char *hunt_id) {
         }
 
         execl("./treasure_manager", "treasure_manager", "--list", hunt_id, NULL);
-
+    }
+    else {
+        waitpid(pid, NULL, 0);
+        kill(getppid(), SIGUSR2);
     }
     
 }
@@ -96,6 +99,10 @@ void get_treasure(char *hunt_id, char *treasure_id) {
 
         execl("./treasure_manager", "treasure_manager", "--view", hunt_id, treasure_id, NULL);
 
+    }
+    else {
+        waitpid(pid, NULL, 0);
+        kill(getppid(), SIGUSR2);
     }
 
 }

@@ -14,10 +14,43 @@
 #include "hub_commands.h"
 #include "monitor.h"
 
+
 int monitor_stopping = 0;
 int is_monitor_stopping()
 {
     return monitor_stopping;
+}
+
+void receive_data(int signum)
+{
+    assert(signum == SIGUSR2);
+}
+
+void monitor_stopped(int signum)
+{
+
+    assert(signum == SIGCHLD);
+
+    monitor_stopping = 0;
+    printf("Child process exited with status: %d\n", WEXITSTATUS(signum));
+}
+
+void copy_buffer(char *message, Monitor *monitor) {
+
+    assert(monitor != NULL);
+    assert(monitor->pid != 0);
+    assert(monitor->status == 1);
+
+    char buffer[1024];
+
+    int bytes_read = read(monitor->pipefd[0], buffer, sizeof(buffer));
+    if (bytes_read > 0) {
+        buffer[bytes_read] = '\0';
+        strcpy(message, buffer);
+    }
+    else {
+        perror("Failed to read from pipe");
+    }
 }
 
 void start_monitor(char *message, Monitor *monitor)
@@ -106,25 +139,13 @@ void list_all_hunts(char *message, Monitor *monitor)
 
     kill(monitor->pid, SIGUSR1);
 
+    //Asteapta SIGUSR1
     pause();
 
-    strcat(message, "Listing all hunts...\n");
-
-    char buffer[1024];
-    int bytes_read = read(monitor->pipefd[0], buffer, sizeof(buffer));
-    if (bytes_read > 0)
-    {
-        printf("bytes_read: %d\n", bytes_read);
-        buffer[bytes_read] = '\0';
-        printf("Received from pipe: %s\n", buffer);
-    }
-    else
-    {
-        perror("Failed to read from pipe");
-    }
+    copy_buffer(message, monitor);
 }
 
-void list_treasures(Monitor *monitor, char *hunt_id)
+void list_treasures(char *message, Monitor *monitor, char *hunt_id)
 {
 
     assert(monitor != NULL);
@@ -152,11 +173,15 @@ void list_treasures(Monitor *monitor, char *hunt_id)
     close(file_descriptor);
 
     kill(monitor->pid, SIGUSR1);
+   
+    //Asteapta SIGUSR1
+    pause();
 
-    printf("Listing treasures...\n");
+    copy_buffer(message, monitor);
+
 }
 
-void view_treasure(Monitor *monitor, char *hunt_id, char *treasure_id)
+void view_treasure(char *message, Monitor *monitor, char *hunt_id, char *treasure_id)
 {
 
     assert(monitor != NULL);
@@ -187,16 +212,10 @@ void view_treasure(Monitor *monitor, char *hunt_id, char *treasure_id)
 
     kill(monitor->pid, SIGUSR1);
 
-    printf("Viewing treasure...\n");
-}
-
-void monitor_stopped(int signum)
-{
-
-    assert(signum == SIGCHLD);
-
-    monitor_stopping = 0;
-    printf("Child process exited with status: %d\n", WEXITSTATUS(signum));
+    //Asteapta SIGUSR1
+    pause();
+    
+    copy_buffer(message, monitor);
 }
 
 void link_hub_handlers()
@@ -213,13 +232,13 @@ void link_hub_handlers()
         perror("sigaction");
     }
 
-    struct sigaction usr1_handler;
+    struct sigaction usr2_handler;
 
-    usr1_handler.sa_handler = SIG_DFL;
-    sigemptyset(&(usr1_handler.sa_mask));
-    usr1_handler.sa_flags = 0;
+    usr2_handler.sa_handler = &receive_data;
+    sigemptyset(&(usr2_handler.sa_mask));
+    usr2_handler.sa_flags = 0;
     
-    if (sigaction(SIGUSR1, &usr1_handler, NULL) == -1)
+    if (sigaction(SIGUSR2, &usr2_handler, NULL) == -1)
     {
         perror("sigaction");
     }

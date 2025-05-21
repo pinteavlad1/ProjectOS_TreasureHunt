@@ -64,7 +64,8 @@ int main() {
 						char hunt_id[21];
 						printf("Enter hunt ID: ");
 						scanf("%20s", hunt_id);
-						list_treasures(&monitor, hunt_id);
+						list_treasures(message, &monitor, hunt_id);
+						printf("%s\n", message);
 					}
 				} 
 				else if (strcmp(command, "view_treasure") == 0) {
@@ -73,7 +74,8 @@ int main() {
 					scanf("%20s", hunt_id);
 					printf("Enter treasure ID: ");
 					scanf("%20s", treasure_id);
-					view_treasure(&monitor, hunt_id, treasure_id);
+					view_treasure(message, &monitor, hunt_id, treasure_id);
+					printf("%s\n", message);
 				} 
 				else if (strcmp(command, "exit") == 0) {
 					break;
@@ -84,9 +86,6 @@ int main() {
 				else if (strcmp(command, "exit") == 0) {
 					break;
 				} 
-				else if (strcmp(command, "clear") == 0) {
-					printf("\e[1;1H\e[2J"); //ANSI clear screen
-				}
 				else
 				{
 					printf("Unknown command: %s\n", command);

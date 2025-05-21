@@ -340,4 +340,5 @@ void list_hunts(int argc, char *argv[])
             printf("%s: %d treasures\n", entry->d_name, treasures_in_file(treasure_file_path(entry->d_name, "treasure.bin")));
         }
     }
+    closedir(dir);
 }
