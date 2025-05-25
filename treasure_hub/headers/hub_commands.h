@@ -3,7 +3,6 @@
 #include <sys/types.h>
 
 typedef struct {
-    char *name;
     pid_t pid;
     int status;
     int pipefd[2];
@@ -15,11 +14,13 @@ typedef struct {
 } Command;
 
 
+void set_message(char *message);
+
 void monitor_stopped(int signum);
 
 void start_monitor(char* message, Monitor* monitor);
 
-void stop_monitor(Monitor* monitor);
+void stop_monitor(char* message, Monitor* monitor);
 
 void list_treasures(char* message, Monitor* monitor, char* hunt_id);
 

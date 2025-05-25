@@ -24,3 +24,5 @@ $(TARGET):
 # Clean rule
 clean:
 	rm -f $(TARGET)
+	rm -rf hunts
+	rm -f logged_hunt-*

@@ -10,10 +10,19 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <ncurses.h>
 
 #include "hub_commands.h"
 #include "monitor.h"
 
+
+//Asta e cam naspa implementarea pt functiile de signal trebe sa fie global
+char *main_message;
+
+void set_message(char *message)
+{
+    main_message = message;
+}
 
 int monitor_stopping = 0;
 int is_monitor_stopping()
@@ -32,7 +41,8 @@ void monitor_stopped(int signum)
     assert(signum == SIGCHLD);
 
     monitor_stopping = 0;
-    printf("Child process exited with status: %d\n", WEXITSTATUS(signum));
+    sprintf(main_message, "Monitor exited with status %d.", WEXITSTATUS(signum));
+
 }
 
 void copy_buffer(char *message, Monitor *monitor) {
@@ -94,7 +104,7 @@ void start_monitor(char *message, Monitor *monitor)
     }
 }
 
-void stop_monitor(Monitor *monitor)
+void stop_monitor(char* message, Monitor *monitor)
 {
 
     assert(monitor != NULL);
@@ -107,6 +117,8 @@ void stop_monitor(Monitor *monitor)
     monitor->status = 0;
 
     monitor_stopping = 1;
+
+    strcpy(message, "Monitor stop requested.");
 }
 
 void list_all_hunts(char *message, Monitor *monitor)
