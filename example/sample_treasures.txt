@@ -1,0 +1,29 @@
+treasure1
+user1
+34 32
+This is a clue text.
+25
+
+treasure2
+user2
+39 32
+This is another clue text.
+20
+
+treasure3
+user1
+21 32
+This is another clue text.
+15
+
+treasure4
+jamie
+0 0
+Cluee!
+32
+
+treasure5
+james
+0 12
+Box?
+45
