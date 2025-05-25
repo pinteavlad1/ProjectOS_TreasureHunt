@@ -3,14 +3,12 @@
 
 #include <stdio.h>
 #include <time.h>
-
-//Idee: interfata cu ncurses - ceva gen neofetch
+#include <string.h>
 
 Treasure treasure_from_input(const char *hunt_name)
 {
 
     //TODO: INPUT VALIDATION
-    //TODO: sa mearga clue cu mai multe cuvinte
     
     Treasure treasure;
     printf("Adding a new treasure to hunt: %s\n", hunt_name);
@@ -20,8 +18,13 @@ Treasure treasure_from_input(const char *hunt_name)
     scanf("%s", treasure.user_name);
     printf("Enter the coordinates (latitude longitude): ");
     scanf("%lf %lf", &treasure.coordinates.latitude, &treasure.coordinates.longitude);
+    getchar();
     printf("Enter the clue text: ");
-    scanf("%s", treasure.clue_text);
+    fgets(treasure.clue_text, sizeof(treasure.clue_text), stdin);
+    size_t len = strlen(treasure.clue_text);
+    if (len > 0 && treasure.clue_text[len - 1] == '\n') {
+        treasure.clue_text[len - 1] = '\0';
+    }
     printf("Enter the value of the treasure: ");
     scanf("%hu", &treasure.value);
 
