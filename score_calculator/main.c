@@ -40,17 +40,17 @@ int main(int argc, char *argv[])
 
     while (read(fd, &treasure, sizeof(Treasure)) == sizeof(Treasure))
     {
-        uint32_t hash = hash_djb2(treasure.id);
+        uint32_t hash = hash_djb2(treasure.user_name);
         int index = hash % 393241;
 
         if (values[index] == 0) {
-            keys[k] = malloc(strlen(treasure.id) + 1);
+            keys[k] = malloc(strlen(treasure.user_name) + 1);
             if (keys[k] == NULL) {
                 perror("Failed to allocate memory for key");
                 close(fd);
                 return 1;
             }
-            strcpy(keys[k], treasure.id);
+            strcpy(keys[k], treasure.user_name);
             values[index] = treasure.value;
             k++;
         } else {
