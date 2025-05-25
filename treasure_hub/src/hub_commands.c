@@ -139,7 +139,7 @@ void list_all_hunts(char *message, Monitor *monitor)
 
     kill(monitor->pid, SIGUSR1);
 
-    //Asteapta SIGUSR1
+    //Asteapta SIGUSR2
     pause();
 
     copy_buffer(message, monitor);
@@ -174,7 +174,7 @@ void list_treasures(char *message, Monitor *monitor, char *hunt_id)
 
     kill(monitor->pid, SIGUSR1);
    
-    //Asteapta SIGUSR1
+    //Asteapta SIGUSR2
     pause();
 
     copy_buffer(message, monitor);
@@ -212,7 +212,7 @@ void view_treasure(char *message, Monitor *monitor, char *hunt_id, char *treasur
 
     kill(monitor->pid, SIGUSR1);
 
-    //Asteapta SIGUSR1
+    //Asteapta SIGUSR2
     pause();
     
     copy_buffer(message, monitor);
@@ -243,3 +243,89 @@ void link_hub_handlers()
         perror("sigaction");
     }
 }
+
+void extract_hunt_names(const char *message_hunts, char hunt_names[][32], int *hunt_count) {
+
+    *hunt_count = 0;
+    char buffer[1024];
+    strncpy(buffer, message_hunts, sizeof(buffer));
+    buffer[sizeof(buffer)-1] = '\0';
+
+    char *line = strtok(buffer, "\n");
+
+    while (line && *hunt_count < 32) {
+        char *colon = strchr(line, ':');
+        if (colon) {
+            size_t len = colon - line;
+            if (len > 31) len = 31;
+            strncpy(hunt_names[*hunt_count], line, len);
+            hunt_names[*hunt_count][len] = '\0';
+            (*hunt_count)++;
+        }
+        line = strtok(NULL, "\n");
+    }
+}
+
+void calculate_score(char* message, Monitor* monitor) {
+
+    assert(monitor != NULL);
+    assert(monitor->pid != 0);
+    assert(monitor->status == 1);
+
+    char *message_temp = (char*) malloc(1024);
+
+    list_all_hunts(message_temp, monitor);
+    if (strlen(message_temp) == 0) {
+        strcpy(message, "No hunts available.");
+        free(message_temp);
+        return;
+    }
+
+    char hunt_names[32][32];
+    int hunt_count = 0;
+    extract_hunt_names(message_temp, hunt_names, &hunt_count);
+
+    message[0] = 0;
+
+    Command *command;
+    command = (Command *)malloc(sizeof(Command));
+
+    for (int i = 0; i < hunt_count; ++i) {
+
+        int file_descriptor = open("data/command.bin", O_WRONLY | O_CREAT, 0777);
+        if (file_descriptor == -1)
+        {
+            perror("Failed to open command file");
+            return;
+        }
+
+        command->id = 4;
+        strcpy(command->data, hunt_names[i]);
+        if (write(file_descriptor, command, sizeof(Command)) == -1)
+        {
+            perror("Failed to write command");
+            close(file_descriptor);
+            free(command);
+            free(message_temp);
+            return;
+        }
+
+        close(file_descriptor);
+
+        kill(monitor->pid, SIGUSR1);
+
+        //Asteapta SIGUSR2
+        pause();
+
+        strcat(message, "Hunt: ");
+        strcat(message, hunt_names[i]);
+        strcat(message, "\n");
+        copy_buffer(message_temp, monitor);
+        strcat(message, message_temp);
+        strcat(message, "\n");
+    }
+    
+    free(command);
+    free(message_temp);
+}
+

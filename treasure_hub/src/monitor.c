@@ -44,15 +44,13 @@ void stop(int signum) {
     exit(0);
 }
 
-//Am file paths relative in celalalt program
-//TODO: Sa schimb creca e mai ok
 void list_hunts() {
 
     int pid = fork();
 
     if (pid == 0) {
 
-        if (chdir("../treasure_manager") != 0) {
+        if (chdir("../bin") != 0) {
             perror("chdir to new directory failed");
             return;
         }
@@ -72,7 +70,7 @@ void get_treasures(char *hunt_id) {
 
     if (pid == 0) {
 
-        if (chdir("../treasure_manager") != 0) {
+        if (chdir("../bin") != 0) {
             perror("chdir to new directory failed");
             return;
         }
@@ -92,7 +90,7 @@ void get_treasure(char *hunt_id, char *treasure_id) {
 
     if (pid == 0) {
 
-        if (chdir("../treasure_manager") != 0) {
+        if (chdir("../bin") != 0) {
             perror("chdir to new directory failed");
             return;
         }
@@ -158,6 +156,9 @@ void handle_user_signal(int signum) {
         treasure_id[strlen(treasure_id)] = '\0';
         get_treasure(hunt_id, treasure_id);   
     }
+    if (command.id == 4) {
+        get_score(command.data);
+    }
 
 
     close(file_descriptor);
@@ -182,5 +183,24 @@ void link_handlers() {
 
     if (sigaction(SIGUSR1, &user_signal_handler, NULL) == -1) {
         perror("sigaction");
+    }
+}
+
+void get_score(char *hunt_id) {
+
+    int pid = fork();
+
+    if (pid == 0) {
+
+        if (chdir("../bin") != 0) {
+            perror("chdir to new directory failed");
+            return;
+        }
+
+        execl("./score_calculator", "score_calculator", hunt_id, NULL);
+    }
+    else {
+        waitpid(pid, NULL, 0);
+        kill(getppid(), SIGUSR2);
     }
 }

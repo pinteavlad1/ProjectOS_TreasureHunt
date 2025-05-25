@@ -29,10 +29,9 @@ void list_all_hunts(char* message, Monitor* monitor);
 
 void link_hub_handlers();
 
+void calculate_score(char* message, Monitor* monitor);
+
 int is_monitor_stopping();
-
-
-
 
 
 

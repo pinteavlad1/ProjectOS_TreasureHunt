@@ -5,31 +5,23 @@ CLINKS = -lncurses -lmenu
 
 # Directories
 SRC_DIR = src
-OBJ_DIR = objects
 HDR_DIR = headers
+BIN_DIR = ../bin
 
-# Source and object files
+# Source files
 SRCS = $(wildcard $(SRC_DIR)/*.c)
-OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
 # Output executable
-TARGET = treasure_hub
+TARGET = $(BIN_DIR)/treasure_hub
 
 # Default rule
 all: $(TARGET)
 
-# Link all object files to create final executable
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(CLINKS)
-
-# Compile .c files to .o in objects/ directory
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Ensure objects/ directory exists
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+# Link all source files to create final executable
+$(TARGET):
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $(SRCS) $(CLINKS)
 
 # Clean rule
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET)
+	rm -f $(TARGET)

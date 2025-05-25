@@ -2,9 +2,18 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+
 #include "hub_commands.h"
 
 int main() {
+
+
+	if (chdir("../treasure_hub") != 0) {
+		perror("Failed to change directory to treasure_hub");
+		return 1;
+	}
+
+
     char command[21];
 	Monitor monitor = {};
 	monitor.name = "Treasure Monitor";
@@ -77,17 +86,23 @@ int main() {
 					view_treasure(message, &monitor, hunt_id, treasure_id);
 					printf("%s\n", message);
 				} 
+				else if (strcmp(command, "calculate_score") == 0) {
+					
+					if (monitor.status == 0) {
+						printf("Monitor is not running.\n");
+					} 
+					else {
+						calculate_score(message, &monitor);
+						printf("%s\n", message);
+					}
+				}
 				else if (strcmp(command, "exit") == 0) {
 					break;
 				} 
 				else if (strcmp(command, "clear") == 0) {
 					printf("\e[1;1H\e[2J"); //ANSI clear screen
 				}
-				else if (strcmp(command, "exit") == 0) {
-					break;
-				} 
-				else
-				{
+				else {
 					printf("Unknown command: %s\n", command);
 				}
 			}

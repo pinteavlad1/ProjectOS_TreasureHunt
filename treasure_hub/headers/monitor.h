@@ -10,4 +10,6 @@ void get_treasures(char *hunt_id);
 
 void get_treasure(char *hunt_id, char *treasure_id);
 
+void get_score(char *hunt_id);
+
 void link_handlers();

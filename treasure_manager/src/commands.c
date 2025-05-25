@@ -158,7 +158,6 @@ void view(int argc, char *argv[])
 
     while (read(file_descriptor, &treasure, sizeof(Treasure)) == sizeof(Treasure))
     {
-        printf("Reading treasure with ID: %s\n", treasure.id);
         if (strcmp(treasure.id, argv[3]) == 0)
         {
             print_treasure(treasure);
