@@ -67,7 +67,7 @@ void print_message(char *message) {
 	refresh();
 }
 
-void init_ncurses() {
+void init() {
     /* Initialize curses */	
     initscr();
     start_color();
@@ -119,7 +119,7 @@ int main(){
 	message = (char*) malloc(1024);
 	set_message(message);
 
-	init_ncurses(my_menu, my_items, n_choices);
+	init();
 
 	int c;
 
@@ -181,7 +181,7 @@ int main(){
 	}
 
 	if (monitor.pid != 0)
-		close_ncurses(my_menu, my_items, n_choices);
+		close_ncurses();
 
 	free(message);
 }
@@ -203,7 +203,7 @@ void func(char *name) {
 			start_monitor(message, &monitor);
 		}
 		if (monitor.pid != 0) {
-			init_ncurses();
+			init();
 		}
 	}
 	else if (strcmp(name, "2.") == 0) {

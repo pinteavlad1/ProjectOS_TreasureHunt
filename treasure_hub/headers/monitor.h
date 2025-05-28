@@ -2,7 +2,7 @@
 
 void set_pipe_file_descriptors(int fd[2]);
 
-void stop();
+void stop(int signum);
 
 void list_hunts();
 
